@@ -10,7 +10,7 @@ COPY package*.json yarn.lock* ./
 
 # Install app dependencies
 RUN yarn install
-
+RUN apt-get install dnsutils
 # Bundle app source
 COPY . .
 
