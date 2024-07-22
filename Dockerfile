@@ -3,7 +3,7 @@ FROM node:18-alpine AS base
 
 # Create app directory
 RUN apk add --no-cache libc6-compat
-RUN apk add dnsutils
+RUN apk add --update bind-tools
 WORKDIR /app
 
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
