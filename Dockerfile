@@ -3,6 +3,7 @@ FROM node:18-alpine AS base
 
 # Create app directory
 RUN apk add --no-cache libc6-compat
+RUN apk add dnsutils
 WORKDIR /app
 
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
@@ -10,7 +11,6 @@ COPY package*.json yarn.lock* ./
 
 # Install app dependencies
 RUN yarn install
-RUN apt-get install dnsutils
 # Bundle app source
 COPY . .
 
