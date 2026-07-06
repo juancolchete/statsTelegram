@@ -23,11 +23,9 @@ jobs:
       id-token: write
 
     steps:
-      # Bumped to v5 to resolve Node 20 deprecation
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      # Bumped to v4
       - name: Log in to the Container registry
         uses: docker/login-action@v4
         with:
@@ -35,7 +33,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Bumped to v6
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v6
@@ -48,8 +45,10 @@ jobs:
       - name: Create .env file
         run: |
           echo "TELEGRAM_API=${{ secrets.TELEGRAM_API }}" >> .env
+          echo "EMAIL_USER=${{ secrets.EMAIL_USER }}" >> .env
+          echo "EMAIL_PASS=${{ secrets.EMAIL_PASS }}" >> .env
+          echo "TARGET_EMAIL=${{ secrets.TARGET_EMAIL }}" >> .env
 
-      # Bumped to v6
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
