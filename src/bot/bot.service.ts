@@ -14,6 +14,8 @@ export class BotService implements OnModuleInit {
   }
 
   onModuleInit() {
+    console.log('🚀 onModuleInit triggered! Starting bot...');
+    this.initBot();
   }
 
   initBot() {
