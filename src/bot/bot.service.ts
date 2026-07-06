@@ -25,28 +25,38 @@ export class BotService implements OnModuleInit {
     this.bot = new TelegramBot(token, { polling: true });
 
     this.bot.on('message', async (msg) => {
-      // Added optional chaining in case msg.text is undefined
-      if (msg.text?.toString().toLowerCase().includes('publicip')) {
+      const text = msg.text?.toString().toLowerCase() || '';
+
+      // 1. Check for the email command FIRST
+      if (text.includes('publicipemail')) {
+        try {
+          await this.sendIpViaEmail();
+          this.bot.sendMessage(msg.chat.id, `✅ IP address successfully sent to ${process.env.TARGET_EMAIL}`);
+        } catch (error) {
+          this.bot.sendMessage(msg.chat.id, '❌ Failed to send the email. Check server logs.');
+        }
+      } 
+      // 2. Otherwise, check for the standard Telegram IP command
+      else if (text.includes('publicip')) {
         try {
           const ip = await this.getPublicIp();
           this.bot.sendMessage(msg.chat.id, ip);
         } catch (error) {
           this.logger.error('Error fetching IP for Telegram', error);
-          this.bot.sendMessage(msg.chat.id, 'Error fetching IP address.');
+          this.bot.sendMessage(msg.chat.id, '❌ Error fetching IP address.');
         }
       }
     });
   }
 
-  // Runs every day at 8:00 AM. 
-  // Change to CronExpression.EVERY_HOUR or a custom string like '0 * * * *' as needed.
+  // Runs every day at 8:00 AM automatically, AND when called by the bot
   @Cron(CronExpression.EVERY_DAY_AT_8AM)
   async sendIpViaEmail() {
     try {
       const ip = await this.getPublicIp();
 
       const transporter = nodemailer.createTransport({
-        service: 'gmail', // E.g., 'gmail', 'sendgrid', or configure host/port
+        service: 'gmail', 
         auth: {
           user: process.env.EMAIL_USER,
           pass: process.env.EMAIL_PASS,
@@ -62,11 +72,12 @@ export class BotService implements OnModuleInit {
 
       this.logger.log(`IP email successfully sent to ${process.env.TARGET_EMAIL}`);
     } catch (error) {
-      this.logger.error('Failed to send IP email via Cron', error);
+      this.logger.error('Failed to send IP email', error);
+      // Throw the error so the Telegram bot block can catch it and notify you
+      throw error; 
     }
   }
 
-  // Refactored to a Promise so both the Bot and the Cron job can use it
   private getPublicIp(): Promise<string> {
     return new Promise((resolve, reject) => {
       exec(`dig TXT +short o-o.myaddr.l.google.com @ns1.google.com | awk -F'"' '{ print $2}'`, (error, stdout, stderr) => {
