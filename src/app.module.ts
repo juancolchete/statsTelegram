@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ConfigModule } from '@nestjs/config';
 import { BotService } from './bot/bot.service';
 
 @Module({
   imports: [
-    ScheduleModule.forRoot() // <-- Add this
+    ConfigModule.forRoot(),
+    ScheduleModule.forRoot()
   ],
   providers: [BotService],
 })
