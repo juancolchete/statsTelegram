@@ -14,7 +14,6 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     
-    # Specifies that this job uses the "main" environment
     environment: main
     
     permissions:
@@ -24,32 +23,35 @@ jobs:
       id-token: write
 
     steps:
+      # Bumped to v5 to resolve Node 20 deprecation
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
+      # Bumped to v4
       - name: Log in to the Container registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Bumped to v6
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=ref,event=branch
             type=sha
 
-      # Because of "environment: main" above, this pulls from the main environment secrets
       - name: Create .env file
         run: |
           echo "TELEGRAM_API=${{ secrets.TELEGRAM_API }}" >> .env
 
+      # Bumped to v6
       - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
