@@ -10,7 +10,6 @@ export class BotService implements OnModuleInit {
   private bot: TelegramBot;
 
   onModuleInit() {
-    this.initBot();
   }
 
   initBot() {
