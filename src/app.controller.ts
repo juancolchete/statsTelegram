@@ -1,12 +1,13 @@
-import { BotService } from './bot/bot.service';
-import { Get, Controller, Res, HttpStatus } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
+import { BotService } from './bot/bot.service'; // Make sure the path matches your structure
 
 @Controller()
 export class AppController {
-  constructor(private botService:BotService) {}
+  // Injecting it here forces NestJS to instantiate the bot when the app starts
+  constructor(private readonly botService: BotService) {}
 
   @Get()
-  getBotDialog(@Res() res) {
-    res.status(HttpStatus.OK).send("Bot service started");
+  getHello(): string {
+    return 'Server is running!';
   }
 }

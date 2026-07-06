@@ -9,6 +9,10 @@ export class BotService implements OnModuleInit {
   private readonly logger = new Logger(BotService.name);
   private bot: TelegramBot;
 
+  constructor() {
+    console.log('🛠️ BotService file has been successfully loaded by NestJS!');
+  }
+
   onModuleInit() {
   }
 
