@@ -13,6 +13,7 @@ export class BotService implements OnModuleInit {
   }
 
   initBot() {
+    this.logger.log('Telegram Bot successfully connected!');
     process.env.NTBA_FIX_319 = '1';
     const token = process.env.TELEGRAM_API;
 
